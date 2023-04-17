@@ -7,6 +7,7 @@ import cv2 as cv
 import numpy as np
 import onnxruntime
 import time
+import sys
 
 import pygame
 import pygame.midi
@@ -26,13 +27,21 @@ HUMAN_COLOR = (255, 0, 0)
 
 # midi setup
 for i in range(pygame.midi.get_count()):
+    print(pygame.midi.get_device_info(i))
     interf, name, input_dev, output_dev, opened = pygame.midi.get_device_info(i)
     if output_dev and b'NSX-39 ' in name:
         print('midi id=' + str(i))
         midi_output = pygame.midi.Output(i)
 
-midi_output.set_instrument(1, 2)
+    if output_dev and b'UM-1' in name:
+        print('midi id=' + str(i))
+        midi_output = pygame.midi.Output(i)
 
+try:
+    midi_output.set_instrument(1, 2) # inst: MIDI instrument No, ch: MIDI channel from 0 ex: 2 -> 3
+except:
+    print('Not found MIDI device')
+    sys.exit()
 
 def get_args():
     parser = argparse.ArgumentParser()
