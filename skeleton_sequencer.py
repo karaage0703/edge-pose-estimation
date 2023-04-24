@@ -37,11 +37,16 @@ for i in range(pygame.midi.get_count()):
         print('midi id=' + str(i))
         midi_output = pygame.midi.Output(i)
 
+    if output_dev and b'InstaChord' in name:
+        print('midi id=' + str(i))
+        midi_output = pygame.midi.Output(i)
+
 try:
     midi_output.set_instrument(1, 2) # inst: MIDI instrument No, ch: MIDI channel from 0 ex: 2 -> 3
 except:
     print('Not found MIDI device')
     sys.exit()
+
 
 def get_args():
     parser = argparse.ArgumentParser()
