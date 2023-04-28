@@ -18,6 +18,8 @@ pygame.midi.init()
 # time param
 start_time = 0.0
 dot_line = 0
+speed = 0.5
+instrument = 1
 
 # music setting
 volume = 127
@@ -42,7 +44,7 @@ for i in range(pygame.midi.get_count()):
         midi_output = pygame.midi.Output(i)
 
 try:
-    midi_output.set_instrument(1, 2) # inst: MIDI instrument No, ch: MIDI channel from 0 ex: 2 -> 3
+    midi_output.set_instrument(instrument, 2)  # inst: MIDI instrument No, ch: MIDI channel from 0 ex: 2 -> 3
 except:
     print('Not found MIDI device')
     sys.exit()
@@ -54,7 +56,6 @@ def get_args():
     parser.add_argument("--device", type=int, default=0)
     parser.add_argument("--width", help='cap width', type=int, default=960)
     parser.add_argument("--height", help='cap height', type=int, default=540)
-    parser.add_argument('--fullscreen', type=bool, default=False)
 
     args = parser.parse_args()
 
@@ -95,7 +96,6 @@ def skeleton_sequencer(src):
     global note_list
 
     # parameters
-    speed = 0.5
     d_circle = 30
 
     image_h, image_w = src.shape[:2]
@@ -186,6 +186,8 @@ def run_inference(onnx_session, input_size, image):
 
 def main():
     global start_time
+    global speed
+    global instrument
 
     args = get_args()
 
@@ -203,9 +205,6 @@ def main():
     onnx_session = onnxruntime.InferenceSession(model_path)
 
     window_name = 'Skeleton Sequencer'
-    if args.fullscreen:
-        cv.namedWindow(window_name, cv.WINDOW_NORMAL)
-        cv.setWindowProperty(window_name, cv.WND_PROP_FULLSCREEN, cv.WINDOW_FULLSCREEN)
 
     start_time = time.time()
     while True:
@@ -239,6 +238,30 @@ def main():
         key = cv.waitKey(1)
         if key == 27:  # ESC
             break
+        if key == 0:  # up
+            if speed > 0.1:
+                speed -= 0.05
+                print('speed up:' + str(speed))
+            else:
+                print('speed is too high')
+        if key == 1:  # down
+            if speed < 1.0:
+                speed += 0.05
+                print('speed down:' + str(speed))
+            else:
+                print('speed is too slow')
+        if key == 2:  # left
+            instrument -= 1
+            if instrument < 1:
+                instrument += 127
+            print('instrument:' + str(instrument))
+            midi_output.set_instrument(instrument, 2)  # inst: MIDI instrument No, ch: MIDI channel from 0 ex: 2 -> 3
+        if key == 3:  # right
+            instrument += 1
+            if instrument > 127:
+                instrument -= 127
+            print('instrument:' + str(instrument))
+            midi_output.set_instrument(instrument, 2)  # inst: MIDI instrument No, ch: MIDI channel from 0 ex: 2 -> 3
 
         # cv.imshow(window_name, debug_image)
         cv.imshow(window_name, image_ss)
