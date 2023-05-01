@@ -23,6 +23,7 @@ instrument = 1
 
 # music setting
 volume = 127
+midi_channel = 2
 note_list = []
 
 HUMAN_COLOR = (255, 0, 0)
@@ -44,7 +45,7 @@ for i in range(pygame.midi.get_count()):
         midi_output = pygame.midi.Output(i)
 
 try:
-    midi_output.set_instrument(instrument, 2)  # inst: MIDI instrument No, ch: MIDI channel from 0 ex: 2 -> 3
+    midi_output.set_instrument(instrument, midi_channel)  # inst: MIDI instrument No, ch: MIDI channel from 0 ex: 2 -> 3
 except:
     print('Not found MIDI device')
     sys.exit()
@@ -121,7 +122,7 @@ def skeleton_sequencer(src):
 
         # sound off
         for note in note_list:
-            midi_output.note_off(note, volume, 2)
+            midi_output.note_off(note, volume, midi_channel)
 
         # sound on
         note_list = []
@@ -131,7 +132,7 @@ def skeleton_sequencer(src):
                 note_list.append(get_pentatonic_scale(y))
 
         for note in note_list:
-            midi_output.note_on(note, volume, 2)
+            midi_output.note_on(note, volume, midi_channel)
 
     # draw dot
     for y in range(0, h_max):
@@ -201,7 +202,7 @@ def main():
 
     # Load model
     model_path = './model/model_float32.onnx'
-    keypoint_score_th = 0.3
+    keypoint_score_th = 0.25
     onnx_session = onnxruntime.InferenceSession(model_path)
 
     window_name = 'Skeleton Sequencer'
@@ -281,7 +282,7 @@ def draw_debug(
     scores,
 ):
     image_width, image_height = image.shape[1], image.shape[0]
-    face_size = int(image_width * 0.3)
+    face_size = int(image_width * 0.2)
     # face_offset = int(image_width * 0.05)
     body_line_size = int(image_width * 0.1)
     # hand_line_size = int(image_width * 0.1)
