@@ -98,7 +98,7 @@ def main():
     keypoint_score_th = args.keypoint_score
 
     # Initialize video capture
-    cap = cv.VideoCapture(2)
+    cap = cv.VideoCapture(0)
 
     # download required files
     url_model = 'https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_alt.xml'
@@ -193,8 +193,7 @@ def draw_body(
             point02 = keypoints[index02]
             cv.line(debug_image, point01, point02, color, body_line_size)
 
-
-    # fill body
+    # Fill body
     if scores[5] > keypoint_score_th and scores[6] > keypoint_score_th and scores[
         11] > keypoint_score_th and scores[12] > keypoint_score_th:
         cv.rectangle(debug_image, keypoints[5], keypoints[12], HUMAN_COLOR, -1)
